@@ -11,7 +11,7 @@ let cord_txt = document.getElementById("cord");
 
 
 //refresh page;
-const refresh = document.querySelector(".text-refresh")
+const refresh = document.querySelector(".update_btn")
 refresh.addEventListener("click", ()=>print_func() )
 
 function print_func(){
