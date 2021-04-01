@@ -24,6 +24,9 @@ window.addEventListener("load" ,()=>{
     let long;
     let lat;
 
+    const loader = document.querySelector(".loader")
+    loader.className += " hidden";
+
     if (navigator.geolocation)
     {
         navigator.geolocation.getCurrentPosition((position =>
@@ -103,12 +106,13 @@ function get_icon(id){
 
 
 const div_container = document.getElementById("block-wrap")
-var storage = new LinkedList();
+const storage = new LinkedList();
 
 //add_btn.addEventListener("click", AddNew)
 
 function delete_func(block, name){
     var ind = storage.indexOf(name)
+    console.log("index:" + ind)
     console.log(name)
     storage.removeFrom(ind)
     localStorage.setItem('list', storage.getList())
@@ -117,11 +121,22 @@ function delete_func(block, name){
 
 var block_cnt = 0
 function AddNew(item){
-    console.log("add")
+    //console.log("add")
 
     console.log(item)
-    storage.add(item.name)
-    localStorage.setItem('list', storage.getList())
+
+    if(storage.indexOf(item.name) !== -1)
+    {
+        console.log("item already exits")
+        return
+    }
+    else{
+        console.log("good item")
+        storage.add(item.name)
+        localStorage.setItem('list', storage.getList())
+        console.log("my ind "+ storage.indexOf(item.name))
+    }
+
 
     // block description
     const new_block = document.createElement("div")
@@ -267,7 +282,6 @@ const getWeather=async (city)=>
         const weatherData = await response.json()
 
 
-
         const{name}=weatherData;
         const{temp}=weatherData.main;
         const{description, id}=weatherData.weather[0];
@@ -296,7 +310,6 @@ const getWeather=async (city)=>
         console.log(error)
     }
 };
-
 
 storage.getList()
 

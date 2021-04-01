@@ -69,8 +69,10 @@ class LinkedList {
         var current = this.head;
 
         while (current != null) {
-            if (current.element == element)
+            if (current.element === element){
+                console.log("true")
                 return count;
+            }
             count++;
             current = current.next;
         }
