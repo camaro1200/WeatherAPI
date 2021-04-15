@@ -93,16 +93,4 @@ class LinkedList {
     }
 }
 
-var ll = new LinkedList();
-ll.add(10);
-ll.add(12);
-ll.add(14);
-ll.add(40);
-ll.add(50);
-//console.log("index of " + ll.indexOf(12))
-ll.indexOf(12)
-//ll.printList();
-ll.removeFrom(3)
-//ll.printList();
-
 export { hello, Node, LinkedList};

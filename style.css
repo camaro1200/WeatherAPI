@@ -103,7 +103,7 @@
     align-self: center;
     justify-self: center;
     color: gray;
-    font-size: 40px;
+    font-size: 70px;
     font-weight: bold;
 }
 
@@ -174,11 +174,18 @@ p{
     margin: 10px 50px;
 }
 
+
 .description-container{
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
 
+.group-elem{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 20px;
 }
 
 .name-block{
@@ -213,6 +220,7 @@ p{
 }
 
 @media screen and (max-width: 1000px) {
+
 
     .text-refresh {
         display: none;
