@@ -215,6 +215,10 @@ p{
     height: 40px;
 }
 
+.btn-block > p{
+    font-size: 20px;
+}
+
 .div-shadow{
     background: wheat;
 }

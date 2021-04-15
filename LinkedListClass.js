@@ -6,7 +6,7 @@ class Node {
     constructor(data)
     {
         this.element = data;
-        this.next = null
+        this.next = null;
     }
 }
 
