@@ -1,3 +1,7 @@
+html{
+    font-family: "Arial", sans-serif;
+}
+
 .loader{
     position: fixed;
     z-index: 99;
@@ -41,11 +45,8 @@
 
 /* header block */
 
-*{
-    font-family: Arial;
-}
 
-.my_header{
+header{
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     grid-gap: 1em;
@@ -112,7 +113,7 @@
     padding-left: 0;
 }
 
-li{
+.main_list > li{
     list-style-type: none;
     background: grey;
     padding: 5px;
@@ -181,11 +182,12 @@ p{
     align-items: center;
 }
 
-.group-elem{
+figure{
     display: flex;
     justify-content: flex-start;
     align-items: center;
     gap: 20px;
+    margin: 0;
 }
 
 .name-block{
@@ -201,8 +203,8 @@ p{
 }
 
 .icon-block{
-    width:100px;
-    height:100px;
+    width:90px;
+    height:90px;
 }
 
 .btn-block{
@@ -221,6 +223,10 @@ p{
 
 .div-shadow{
     background: wheat;
+}
+
+.template-loader{
+
 }
 
 @media screen and (max-width: 1000px) {

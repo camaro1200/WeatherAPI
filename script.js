@@ -28,9 +28,57 @@ function get_icon(id) {
         weather_img = "./imgs/atmosphere.png";
     else if (id > 800)
         weather_img = "./imgs/sun.png";
-    console.log("weathe path", weather_img)
+    //console.log("weathe path", weather_img)
     return weather_img;
 }
+
+class Item {
+    constructor(name, temp, img, wind, cloud, pressure, humidity, cords) {
+        this.name = name;
+        this.temp = Math.round(temp - 273) + ' °C';
+        this.img = get_icon(img);
+        this.wind = wind;
+        this.cloud = cloud;
+        this.pressure = pressure;
+        this.humidity = humidity;
+        this.cords = cords;
+    }
+}
+
+function getInfo(data){
+    const {name} = data;
+    const {temp} = data.main;
+    const {description, id} = data.weather[0];
+    const {pressure} = data.main;
+    const {humidity} = data.main;
+    const {wind} = data;
+    const {deg} = data.wind;
+    const {speed} = data.wind;
+    const {lat} = data.coord;
+    const {lon} = data.coord;
+
+    const my_cord = "[ " + lat + ", " + lon + " ]";
+    const my_wind = speed + " m/s, " + deg;
+
+    return new Item(name, temp, id, my_wind, description, pressure, humidity, my_cord);
+}
+
+async function getJsonForCity(city) {
+    const api = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=f40dfba4f82e36fe59d1c2ebdea5ea12`
+    return await fetch(api).then((response) => {
+        return response.json();
+    })
+}
+
+async function getJsonForCords(lat, long) {
+    const api = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${long}&appid=f40dfba4f82e36fe59d1c2ebdea5ea12`
+    return await fetch(api).then((response) => {
+        {
+            return response.json();
+        }
+    })
+}
+
 
 function get_curr_location() {
     return new Promise((resolve, reject) => {
@@ -46,66 +94,40 @@ function get_curr_location() {
     )
 }
 
-function make_curr_location() {
-    let p = get_curr_location()
-    p.then((ans) => {
-        let long = ans.longitude;
-        let lat = ans.latitude;
-        const api = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${long}&appid=f40dfba4f82e36fe59d1c2ebdea5ea12`
-        fetch(api).then((response) => {
-            return response.json();
-        })
-            .then(data => {
-                loc.textContent = data.name;
-                tempvalue.textContent = Math.round(data.main.temp - 273);
-                wind_txt.textContent = data.wind.speed + " m/s, " + data.wind.deg;
-                pressure_txt.textContent = data.main.pressure;
-                humidity_txt.textContent = data.main.humidity;
-                climate_txt.textContent = data.weather[0].description;
-                cord_txt.textContent = "[ " + data.coord.lat + ", " + data.coord.lon + " ]";
-                var img_path = get_icon(data.weather[0].id);
-                tempicon.src = img_path;
-                console.log('weateher-id2', data.weather[0].id);
-            })
+
+// get current location
+let coord_promise = get_curr_location()
+coord_promise.then((ans) => {
+    let long = ans.longitude;
+    let lat = ans.latitude;
+    const json_promise = getJsonForCords(lat, long)
+
+    json_promise.then((ans) => {
+        const item = getInfo(ans)
+        loc.textContent = item.name;
+        tempvalue.textContent = item.temp;
+        wind_txt.textContent = item.wind;
+        pressure_txt.textContent = item.pressure;
+        humidity_txt.textContent = item.humidity;
+        climate_txt.textContent = item.cloud;
+        cord_txt.textContent = item.cords;
+        tempicon.src = item.img;
     }).catch((message) => {
-        console.log("this is catch: " + message);
+        console.log("json cord failed catch: " + message);
     })
-}
-
-// intermidiary part
-
-//refresh page;
-refresh.addEventListener("click", () => print_func());
-
-function print_func() {
-    window.location.reload();
-}
-
-const storage = new LinkedList();
-
-window.addEventListener("load", () => {
-    loader.className += " hidden";
-    make_curr_location();
-
-    // loading from local storage
-    var storage_items = localStorage.getItem('list');
-    const items = storage_items.split(' ');
-    for (var i = 0; i < items.length - 1; i++) {
-        get_weather_by_name(items[i]);
-    }
+}).catch((message) => {
+    console.log("location failed catch: " + message);
 })
 
-
-// part2
-
+// part 2
 function delete_func(block, name) {
-    var ind = storage.indexOf(name);
+    let ind = storage.indexOf(name);
     storage.removeFrom(ind);
     localStorage.setItem('list', storage.getList());
     block.remove();
 }
 
-function AddNew(item) {
+function add_new_card(item) {
 
     if (storage.indexOf(item.name) !== -1) {
         console.log("item already exits");
@@ -117,12 +139,12 @@ function AddNew(item) {
 
     let template = document.getElementById('my-template');
     const card = template.content.cloneNode(true);
-    let card_name = card.querySelector('h3');
-    let card_temp = card.querySelector('h1');
-    let card_img = card.querySelector('img');
-    let card_desc = card.querySelectorAll('p');
-    let card_btn = card.querySelector('button');
-    let card_div = card.querySelector('.block');
+    const card_name = card.querySelector('h3');
+    const card_temp = card.querySelector('h1');
+    const card_img = card.querySelector('img');
+    const card_desc = card.querySelectorAll('p');
+    const card_btn = card.querySelector('button');
+    const card_div = card.querySelector('section');
 
     card_name.textContent = item.name;
     card_temp.textContent = item.temp;
@@ -137,54 +159,50 @@ function AddNew(item) {
     card_btn.addEventListener("click", () => delete_func(card_div, item.name))
 }
 
-class item {
-    constructor(name, temp, img, wind, cloud, pressure, humidity, cords) {
-        this.name = name;
-        this.temp = Math.round(temp - 273) + ' °C';
-        this.img = get_icon(img);
-        this.wind = wind;
-        this.cloud = cloud;
-        this.pressure = pressure;
-        this.humidity = humidity;
-        this.cords = cords;
-    }
-}
-
-const get_weather_by_name = async (city) => {
-    try {
-        const api = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=f40dfba4f82e36fe59d1c2ebdea5ea12`
-
-        const response = await fetch(api)
-
-        const weatherData = await response.json()
-
-        const {name} = weatherData;
-        const {temp} = weatherData.main;
-        const {description, id} = weatherData.weather[0];
-        const {pressure} = weatherData.main;
-        const {humidity} = weatherData.main;
-        const {wind} = weatherData;
-        const {deg} = weatherData.wind;
-        const {speed} = weatherData.wind;
-        const {lat} = weatherData.coord;
-        const {lon} = weatherData.coord;
-
-        var my_cord = "[ " + lat + ", " + lon + " ]";
-        var my_wind = speed + " m/s, " + deg;
-
-        var x = new item(name, temp, id, my_wind, description, pressure, humidity, my_cord);
-        AddNew(x);
-
-        console.log("city-id", id);
-
-    } catch (error) {
-        alert('city not found');
-        console.log(error)
-    }
-};
 
 searchButton.addEventListener('click', (e) => {
     e.preventDefault();
-    get_weather_by_name(searchInput.value);
+    const city_promise = getJsonForCity(searchInput.value)
+    city_promise.then((ans) =>{
+        add_new_card(getInfo(ans))
+    }).catch((message) => {
+        alert('city not found');
+        console.log("failed to fetch city2: " + message);
+    })
+
     searchInput.value = '';
 });
+
+
+//refresh page;
+refresh.addEventListener("click", () => print_func());
+
+function print_func() {
+    window.location.reload();
+}
+
+let promiseArray = [];
+const storage = new LinkedList();
+
+window.addEventListener("load", () => {
+    loader.className += " hidden";
+
+    let storage_items = localStorage.getItem('list');
+    const items = storage_items.split(' ');
+
+    for (let i = 0; i < items.length - 1; i++) {
+        promiseArray.push(getJsonForCity(items[i]))
+    }
+
+
+    Promise.all(promiseArray).then(() => {
+        console.log(promiseArray.length)
+            promiseArray.map((x) => {
+                x.then(response => {
+                    add_new_card(getInfo(response))
+                });
+            });
+        }
+    );
+})
+
