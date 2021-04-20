@@ -95,6 +95,18 @@ function get_curr_location() {
 }
 
 
+function make_curr_location(item){
+    loc.textContent = item.name;
+    tempvalue.textContent = item.temp;
+    wind_txt.textContent = item.wind;
+    pressure_txt.textContent = item.pressure;
+    humidity_txt.textContent = item.humidity;
+    climate_txt.textContent = item.cloud;
+    cord_txt.textContent = item.cords;
+    tempicon.src = item.img;
+    loader.className += " hidden";
+}
+
 // get current location
 let coord_promise = get_curr_location()
 coord_promise.then((ans) => {
@@ -103,20 +115,25 @@ coord_promise.then((ans) => {
     const json_promise = getJsonForCords(lat, long)
 
     json_promise.then((ans) => {
+
         const item = getInfo(ans)
-        loc.textContent = item.name;
-        tempvalue.textContent = item.temp;
-        wind_txt.textContent = item.wind;
-        pressure_txt.textContent = item.pressure;
-        humidity_txt.textContent = item.humidity;
-        climate_txt.textContent = item.cloud;
-        cord_txt.textContent = item.cords;
-        tempicon.src = item.img;
+        make_curr_location(item)
+
     }).catch((message) => {
         console.log("json cord failed catch: " + message);
     })
 }).catch((message) => {
     console.log("location failed catch: " + message);
+    const city_promise = getJsonForCity("London")
+    city_promise.then((ans) => {
+
+        const item = getInfo(ans)
+        make_curr_location(item)
+
+    }).catch((message) => {
+        alert('city not found');
+        console.log("failed to fetch city2: " + message);
+    })
 })
 
 // part 2
@@ -139,6 +156,15 @@ function add_new_card(item) {
 
     let template = document.getElementById('my-template');
     const card = template.content.cloneNode(true);
+
+    // const loader = card.querySelector('aside')
+    // //loader.style.visibility = "hidden"
+    // loader.className += " hidden";
+    //
+    // setTimeout(function(){
+    //     loader.remove();
+    // }, 2000);
+
     const card_name = card.querySelector('h3');
     const card_temp = card.querySelector('h1');
     const card_img = card.querySelector('img');
@@ -155,6 +181,8 @@ function add_new_card(item) {
     card_desc[8].textContent = item.humidity;
     card_desc[10].textContent = item.cords;
     div_container.appendChild(card);
+
+
 
     card_btn.addEventListener("click", () => delete_func(card_div, item.name))
 }
@@ -185,15 +213,12 @@ let promiseArray = [];
 const storage = new LinkedList();
 
 window.addEventListener("load", () => {
-    loader.className += " hidden";
-
     let storage_items = localStorage.getItem('list');
     const items = storage_items.split(' ');
 
     for (let i = 0; i < items.length - 1; i++) {
         promiseArray.push(getJsonForCity(items[i]))
     }
-
 
     Promise.all(promiseArray).then(() => {
         console.log(promiseArray.length)
@@ -204,5 +229,6 @@ window.addEventListener("load", () => {
             });
         }
     );
+
 })
 

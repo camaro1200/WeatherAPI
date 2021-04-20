@@ -2,6 +2,7 @@ html{
     font-family: "Arial", sans-serif;
 }
 
+
 .loader{
     position: fixed;
     z-index: 99;
@@ -13,6 +14,8 @@ html{
     display: flex;
     justify-content: center;
     align-items: center;
+    background: wheat;
+
 }
 
 .loader.hidden{
@@ -225,9 +228,17 @@ figure{
     background: wheat;
 }
 
-.template-loader{
-
+aside{
+    display: flex;
+    justify-content: center;
 }
+
+aside.hidden{
+    animation: fadeOut 4s;
+    animation-fill-mode: forwards;
+}
+
+
 
 @media screen and (max-width: 1000px) {
 
