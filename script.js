@@ -1,7 +1,7 @@
 import {LinkedList} from './LinkedListClass.js';
 import {get_icon, Item, getInfo} from './helper.js'
 import {get_curr_location, make_curr_location, getJsonForCords} from "./cordinate_fetch.js";
-import {delete_func, storage, add_new_card, getJsonForCity} from "./city_fetch.js";
+import {delete_func, storage, add_new_card, getJsonForCity, getJsonForFavorite} from "./city_fetch.js";
 
 const searchInput = document.getElementById("search-input");
 const searchButton = document.getElementById("search-btn");
@@ -51,25 +51,63 @@ searchButton.addEventListener('click', (e) => {
     searchInput.value = '';
 });
 
+
+async function getJsonList(){
+    const api = `http://localhost:3000/weather/getCities`
+    return await fetch(api).then((response) => {
+         return response.json()
+    }).then((ans) =>{
+        let arr = [];
+        //console.log(ans)
+        for (let i = 0; i < ans.length; i++){
+            arr.push(getJsonForFavorite(ans[i]));
+        }
+        return arr
+    })
+}
+
 // loading content
 let promiseArray = [];
-window.addEventListener("load", () => {
-    let storage_items = localStorage.getItem('list');
-    const items = storage_items.split(' ');
+window.addEventListener("load", async () => {
 
-    for (let i = 0; i < items.length - 1; i++) {
-        promiseArray.push(getJsonForCity(items[i]))
-    }
+    const my_arr = await getJsonList()
+    console.log(my_arr)
+    console.log("arr len " + my_arr.length)
 
-    Promise.all(promiseArray).then(() => {
-        console.log(promiseArray.length)
-            promiseArray.map((x) => {
+    Promise.all(my_arr).then(() => {
+            console.log(my_arr)
+            my_arr.map((x) => {
+                console.log(x)
                 x.then(response => {
+                    //console.log(response)
                     add_new_card(getInfo(response))
                 });
             });
         }
     );
+
+
+    // let storage_items = localStorage.getItem('list');
+    // const items = storage_items.split(' ');
+    //
+    // for (let i = 0; i < items.length - 1; i++) {
+    //     //promiseArray.push(getJsonForCity(items[i]))
+    //     promiseArray.push(getJsonForFavorite(items[i]))
+    // }
+    //
+    // console.log(promiseArray)
+    // console.log("prom len " + promiseArray.length)
+    //
+    // Promise.all(promiseArray).then(() => {
+    //     console.log(promiseArray.length)
+    //         promiseArray.map((x) => {
+    //             x.then(response => {
+    //                 add_new_card(getInfo(response))
+    //             });
+    //         });
+    //     }
+    // );
+
 })
 
 //refresh page;
@@ -78,4 +116,3 @@ refresh.addEventListener("click", () => print_func());
 function print_func() {
     window.location.reload();
 }
-

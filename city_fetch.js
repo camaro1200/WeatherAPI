@@ -2,18 +2,33 @@ import {LinkedList} from './LinkedListClass.js';
 export let storage = new LinkedList();
 const div_container = document.getElementById("block-wrap");
 
-export async function getJsonForCity(city) {
-    const api = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=f40dfba4f82e36fe59d1c2ebdea5ea12`
+export async function getJsonForFavorite(city) {
+    const api = `http://localhost:3000/weather/city?name=${city}`
     return await fetch(api).then((response) => {
         return response.json();
     })
 }
 
+
+export async function getJsonForCity(city) {
+    //const api = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=f40dfba4f82e36fe59d1c2ebdea5ea12`
+    const api = `http://localhost:3000/weather/addCity?name=${city}`
+    return await fetch(api, {method:"POST"}).then((response) => {
+        return response.json();
+    })
+}
+
 export function delete_func(block, name) {
-    let ind = storage.indexOf(name);
+
+    const ind = storage.indexOf(name);
     storage.removeFrom(ind);
     localStorage.setItem('list', storage.getList());
     block.remove();
+
+    const api = `http://localhost:3000/weather/delCity?name=${name}`
+    return fetch(api, {method:"DELETE"}).then((response) => {
+        console.log("success");
+    })
 }
 
 export function add_new_card(item) {

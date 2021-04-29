@@ -9,9 +9,9 @@ const cord_txt = document.getElementById("cord");
 const loader = document.querySelector(".loader");
 
 
-
 export async function getJsonForCords(lat, long) {
-    const api = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${long}&appid=f40dfba4f82e36fe59d1c2ebdea5ea12`
+    //const api = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${long}&appid=f40dfba4f82e36fe59d1c2ebdea5ea12`
+    const api = `http://localhost:3000/weather/cords?lat=${lat}&long=${long}`
     return await fetch(api).then((response) => {
         {
             return response.json();
